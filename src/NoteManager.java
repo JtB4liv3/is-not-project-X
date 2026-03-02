@@ -6,4 +6,5 @@ public class NoteManager {
     public void deleteNote(String note) {
         System.out.println("Заметка удалена: " + note);
     }
+
 }
