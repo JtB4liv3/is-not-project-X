@@ -6,15 +6,16 @@ public class NotePrinter {
 
     public NotePrinter() {
         notes = new ArrayList<>();
-
+        notes.add("Сделать работу с Git");
+        notes.add("Выучить Java");
     }
 
     public void printAllNotes() {
         System.out.println("Список всех заметок");
         if (notes.isEmpty()) {
-            System.out.println("Заметок пока нет.");
+            System.out.println("Заметок пока нет");
         }
-        
+
     }
 
     public static void main(String[] args) {
