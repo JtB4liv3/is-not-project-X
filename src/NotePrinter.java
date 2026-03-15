@@ -1,25 +1,25 @@
-
-import java.util.ArrayList;
+import java.util.ArrayList; //библиотекм для заметок
 import java.util.List;
 
-public class NotePrinter {
-    private List<String> notes = new ArrayList();
+public class NotePrinter { //Класс заметок
+    private final List<String> notes; //Список для хранения заметок
 
-    public NotePrinter() {
-        this.notes.add("Сделать работу с Git");
-        this.notes.add("Выучить Java");
+    public NotePrinter() { //функция созжающая примеры заметок
+        notes = new ArrayList<>();
+        notes.add("Сделать работу с Git"); //сами примеры
+        notes.add("Выучить Java");
     }
 
-    public void printAllNotes() {
+    public void printAllNotes() { //метод для вывода заметок в консоль
         System.out.println("Список всех заметок");
-        if (this.notes.isEmpty()) {
+        if (notes.isEmpty()) { //проверка на наличие заметок
             System.out.println("Заметок пока нет");
         }
 
     }
 
-    public static void main(String[] args) {
-        NotePrinter printer = new NotePrinter();
-        printer.printAllNotes();
+    public static void main(String[] args) { //главный метод
+        NotePrinter printer = new NotePrinter(); //создание объекта для вывода примеров
+        printer.printAllNotes(); //выполнение функции printAllNotes
     }
 }
