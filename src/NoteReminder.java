@@ -11,8 +11,6 @@ public class Main {
             System.out.println("1. Создать заметку ");
 
             System.out.println("11. Установить напоминание ");
-
-            Никита лох кстати
         }
     }
 }
