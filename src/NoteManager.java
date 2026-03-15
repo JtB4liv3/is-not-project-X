@@ -1,43 +1,47 @@
-import java.time.LocalDateTime;
+import com.noteapp.model.Note;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Note {
-    private int id;
-    private String title;
-    private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+public class NoteManager {
+    private List<Note> notes;
+    private int nextId;
     
-    public Note(String title, String content, int id) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public NoteManager() {
+        this.notes = new ArrayList<>();
+        this.nextId = 1;
     }
     
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
     
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Note createNote(String title, String content) {
+        Note note = new Note(title, content, nextId);
+        notes.add(note);
+        nextId++;
+        System.out.println("Заметка создана: " + title + " (ID: " + note.getId() + ")");
+        return note;
+    }
     
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public boolean deleteNote(int noteId) {
+        for (int i = 0; i < notes.size(); i++) {
+            if (notes.get(i).getId() == noteId) {
+                notes.remove(i);
+                System.out.println("Заметка с ID " + noteId + " удалена");
+                return true;
+            }
+        }
+        System.out.println("Заметка с ID " + noteId + " не найдена");
+        return false;
+    }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-    
-    @Override
-    public String toString() {
-        return "Note{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+    public void showAllNotes() {
+        if (notes.isEmpty()) {
+            System.out.println("Заметок нет");
+            return;
+        }
+        
+        System.out.println("\n Список заметок ");
+        for (Note note : notes) {
+            System.out.println("ID: " + note.getId() + " | " + note.getTitle());
+        }
+        System.out.println("-----------------------\n");
     }
 }
