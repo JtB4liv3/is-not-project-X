@@ -5,6 +5,7 @@ import java.util.List;
 public class NoteManager {
     private List<Note> notes;
     private int nextId;
+    private LocalDateTime reminderTime;
     
 
     public List<Note> getNotes() {
