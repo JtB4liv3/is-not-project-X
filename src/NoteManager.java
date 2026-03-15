@@ -6,6 +6,10 @@ public class NoteManager {
     private List<Note> notes;
     private int nextId;
     
+
+    public List<Note> getNotes() {
+        return notes;
+    }
     public NoteManager() {
         this.notes = new ArrayList<>();
         this.nextId = 1;
