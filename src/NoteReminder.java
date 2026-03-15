@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class NoteReminder {
-    private static NoteManager noteManager = new NoteManager();
+    private static NoteManager noteManager = new NoteManager();//жжж
     private static NoteReminder reminder;
     private static Scanner scanner = new Scanner(System.in);
     private static ScheduledExecutorService scheduler;
