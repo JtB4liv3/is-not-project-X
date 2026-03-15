@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NoteTagger {
-    private Set<String> tags;
+    private final Set<String> tags;
 
     public NoteTagger() {
         this.tags = new HashSet<>();
