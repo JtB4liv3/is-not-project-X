@@ -6,80 +6,128 @@ import com.noteapp.reminder.NoteReminder;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+package com.noteapp.reminder;
+
+import com.noteapp.model.Note;
+import com.noteapp.manager.NoteManager;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Scanner;
 
 public class NoteReminder {
-    private static NoteManager noteManager = new NoteManager();//жжж
-    private static NoteReminder reminder;
-    private static Scanner scanner = new Scanner(System.in);
-    private static ScheduledExecutorService scheduler;
+    private final NoteManager noteManager;
+    private final Scanner scanner;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public static void main(String[] args) {
-        reminder = new NoteReminder(noteManager);
+    public NoteReminder(NoteManager noteManager) {
+        this.noteManager = noteManager;
+        this.scanner = new Scanner(System.in);
+    }
 
-        // Запускаем фоновую проверку напоминаний
-        startReminderChecker();
+    public void setReminder() {
+        List<Note> notes = noteManager.getNotes();
 
-        while (true) {
-            // Проверяем напоминания перед меню
-            reminder.checkReminders();
+        if (notes.isEmpty()) {
+            System.out.println("❌ Нет заметок для установки напоминания.");
+            return;
+        }
 
-            // Показываем меню
-            printMenu();
+        System.out.println("\n=== Доступные заметки ===");
+        for (Note note : notes) {
+            String reminderInfo = (note.getReminderTime() != null)
+                    ? " (напоминание: " + note.getReminderTime().format(formatter) + ")"
+                    : "";
+            System.out.println("ID " + note.getId() + ": " + note.getTitle() + reminderInfo);
+        }
 
-            System.out.print("Выберите пункт: ");
-            String choice = scanner.nextLine();
+        System.out.print("\nВведите ID заметки: ");
+        int id;
+        try {
+            id = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Введите корректный ID!");
+            return;
+        }
 
-            switch (choice) {
-                case "1":
-                    createNote();
-                    break;
-                case "2":
-                    // Поиск (Иван)
-                    System.out.println("Функция в разработке");
-                    break;
-                case "3":
-                    noteManager.showAllNotes();
-                    break;
-                case "11":
-                    reminder.setReminder();
-                    break;
-                case "12":
-                    reminder.showAllReminders();
-                    break;
-                case "0":
-                    System.out.println("Выход...");
-                    scheduler.shutdown();
-                    return;
-                default:
-                    System.out.println("Неверный выбор!");
+        Note selectedNote = findNoteById(id);
+        if (selectedNote == null) {
+            System.out.println("❌ Заметка с ID " + id + " не найдена!");
+            return;
+        }
+
+        System.out.print("Введите дату и время (ГГГГ-ММ-ДД ЧЧ:ММ): ");
+        String dateTimeStr = scanner.nextLine();
+
+        try {
+            LocalDateTime reminderTime = LocalDateTime.parse(dateTimeStr, formatter);
+
+            if (reminderTime.isBefore(LocalDateTime.now())) {
+                System.out.println("❌ Нельзя установить напоминание на прошлое!");
+                return;
+            }
+
+            selectedNote.setReminderTime(reminderTime);
+            System.out.println("✅ Напоминание установлено на " + reminderTime.format(formatter));
+
+        } catch (DateTimeParseException e) {
+            System.out.println("❌ Неверный формат даты! Используйте: ГГГГ-ММ-ДД ЧЧ:ММ");
+        }
+    }
+
+    public void checkReminders() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Note> notes = noteManager.getNotes();
+
+        for (Note note : notes) {
+            if (note.getReminderTime() != null && note.getReminderTime().isBefore(now)) {
+                showReminder(note);
+                note.setReminderTime(null);
             }
         }
     }
 
-    private static void printMenu() {
-        System.out.println("\n=== МЕНЮ ===");
-        System.out.println("1. Создать заметку (Костя)");
-        System.out.println("2. Поиск заметок (Иван)");
-        System.out.println("3. Показать все заметки (Кирилл)");
-        // ... другие пункты
-        System.out.println("11. Установить напоминание (Платон)");
-        System.out.println("12. Показать все напоминания (Платон)");
-        System.out.println("0. Выход");
+    public void showAllReminders() {
+        List<Note> notes = noteManager.getNotes();
+        boolean found = false;
+
+        System.out.println("\n=== Активные напоминания ===");
+        for (Note note : notes) {
+            if (note.getReminderTime() != null) {
+                System.out.printf("ID %d: %s - %s%n",
+                        note.getId(),
+                        note.getTitle(),
+                        note.getReminderTime().format(formatter));
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Нет активных напоминаний.");
+        }
     }
 
-    private static void createNote() {
-        System.out.print("Введите заголовок: ");
-        String title = scanner.nextLine();
-        System.out.print("Введите содержание: ");
-        String content = scanner.nextLine();
-        noteManager.createNote(title, content);
+    private void showReminder(Note note) {
+        System.out.println("\n" + "=".repeat(50));
+        System.out.println("🔔 НАПОМИНАНИЕ 🔔");
+        System.out.println("=".repeat(50));
+        System.out.println("Заметка: " + note.getTitle());
+        System.out.println("Время: " + note.getReminderTime().format(formatter));
+        System.out.println("-".repeat(50));
+        System.out.println("Содержание:");
+        System.out.println(note.getContent());
+        System.out.println("=".repeat(50) + "\n");
     }
 
-    private static void startReminderChecker() {
-        scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            reminder.checkReminders();
-        }, 0, 30, TimeUnit.SECONDS);
+    private Note findNoteById(int id) {
+        List<Note> notes = noteManager.getNotes();
+        for (Note note : notes) {
+            if (note.getId() == id) {
+                return note;
+            }
+        }
+        return null;
     }
 }
