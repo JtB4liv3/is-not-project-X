@@ -16,7 +16,7 @@ public class NoteTagger {
         }
     }
 
-    // вывод тегов
+    // вывод всех тегов
     public void showTags() {
         System.out.println("Теги заметки: " + tags);
     }
