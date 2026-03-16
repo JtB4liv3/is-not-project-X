@@ -1,15 +1,18 @@
-import java.io.IOException;
+import java.util.Scanner;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Scanner;
-public class Note {
-    Scanner in = new Scanner(System.in);
+import java.io.IOException;
+
+public class NoteImporter {
     private String name;
     private String content;
-    public void NoteImporter() {
+
+    // Конструктор: при создании объекта он сам запросит имя файла и прочитает его
+    public NoteImporter() {
         Scanner in = new Scanner(System.in);
         System.out.print("Введите название файла с расширением: ");
         this.name = in.nextLine();
+
         try {
             // Читаем весь файл целиком в одну строку
             this.content = Files.readString(Path.of(name));
@@ -19,7 +22,13 @@ public class Note {
             this.content = ""; // Оставляем пустым при ошибке
         }
     }
-    public void show(){
-        System.out.print("Название: "+name+"\nОписание:\n"+content);
+
+    // Геттеры, чтобы можно было получить данные из других частей программы
+    public String getContent() {
+        return content;
+    }
+
+    public String getName() {
+        return name;
     }
 }
